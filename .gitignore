@@ -5,4 +5,7 @@ data/raw/
 data/processed/
 mlruns/
 data/raw/
-data/processed/
+data/processed/*.zip
+mlflow.db
+mlruns/
+data/raw/
