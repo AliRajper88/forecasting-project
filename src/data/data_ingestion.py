@@ -1,3 +1,13 @@
+import pandas as pd
+import os
+from pathlib import Path
+
+# ── Dynamic base paths (works on any computer, any OS) ────────
+BASE = Path(__file__).resolve().parents[2]
+RAW  = BASE / "data" / "raw" / "kaggle"
+PROC = BASE / "data" / "processed"
+
+
 def load_and_normalize(path, dataset_name):
 
     df = pd.read_csv(path)
@@ -11,8 +21,8 @@ def load_and_normalize(path, dataset_name):
         df['date'] = pd.to_datetime(df['Date'])
 
         df = df.rename(columns={
-            'Store ID': 'store_id',
-            'Product ID': 'product_id',
+            'Store ID':       'store_id',
+            'Product ID':     'product_id',
             'Sales Quantity': 'sales'
         })
 
@@ -25,11 +35,11 @@ def load_and_normalize(path, dataset_name):
     elif dataset_name == "inventory":
 
         df = df.rename(columns={
-            'Store ID': 'store_id',
+            'Store ID':   'store_id',
             'Product ID': 'product_id'
         })
 
-        df['date'] = None
+        df['date']  = None
         df['sales'] = None
         df['price'] = None
         df['promo'] = None
@@ -40,11 +50,11 @@ def load_and_normalize(path, dataset_name):
     elif dataset_name == "pricing":
 
         df = df.rename(columns={
-            'Store ID': 'store_id',
+            'Store ID':   'store_id',
             'Product ID': 'product_id'
         })
 
-        df['date'] = None
+        df['date']  = None
         df['sales'] = None
         df['price'] = df['Price']
         df['promo'] = None
@@ -54,37 +64,35 @@ def load_and_normalize(path, dataset_name):
     # -----------------------------
     df['dataset'] = dataset_name
 
-    return df[['date','store_id','product_id','sales','price','promo','dataset']]
+    return df[['date', 'store_id', 'product_id', 'sales', 'price', 'promo', 'dataset']]
+
 
 if __name__ == "__main__":
 
-    import pandas as pd
-    import os
-
-    # Load datasets
+    # ── Load datasets using pathlib paths ─────────────────────
     demand = load_and_normalize(
-        "data/raw/kaggle/demand_forecasting.csv",
+        RAW / "demand_forecasting.csv",
         "demand"
     )
 
     inventory = load_and_normalize(
-        "data/raw/kaggle/inventory_monitoring.csv",
+        RAW / "inventory_monitoring.csv",
         "inventory"
     )
 
     pricing = load_and_normalize(
-        "data/raw/kaggle/pricing_optimization.csv",
+        RAW / "pricing_optimization.csv",
         "pricing"
     )
 
-    # Combine
+    # ── Combine all three ─────────────────────────────────────
     final_df = pd.concat([demand, inventory, pricing], ignore_index=True)
 
-    # View data
+    # ── Preview ───────────────────────────────────────────────
     print(final_df.head(10))
 
-    # Save file
-    os.makedirs("data/processed", exist_ok=True)
-    final_df.to_csv("data/processed/unified_data.csv", index=False)
+    # ── Save to processed folder ──────────────────────────────
+    PROC.mkdir(parents=True, exist_ok=True)
+    final_df.to_csv(PROC / "unified_data.csv", index=False)
 
     print("\nSaved to data/processed/unified_data.csv")
