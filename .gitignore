@@ -9,3 +9,19 @@ data/processed/*.zip
 mlflow.db
 mlruns/
 data/raw/
+
+# Large processed data files (exceed GitHub 100MB limit)
+data/processed/fresh_features.csv
+data/processed/fresh_processed.csv
+data/processed/fresh_segments.csv
+data/processed/kaggle_unified.csv
+data/processed/unified_data.csv
+*.parquet
+
+# Python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
